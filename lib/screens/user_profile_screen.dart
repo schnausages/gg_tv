@@ -6,8 +6,15 @@ class UserProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-      title: Text('Profile screen'),
-    ));
+      appBar: AppBar(
+        title: Text('Profile screen'),
+      ),
+      body: Column(
+        children: [
+          Icon(Icons.person, color: Colors.pink, size: 54),
+          Text('usren1313'),
+        ],
+      ),
+    );
   }
 }
