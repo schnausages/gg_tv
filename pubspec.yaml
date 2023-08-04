@@ -46,6 +46,8 @@ dependencies:
   video_player: ^2.6.1
   like_button: ^2.0.5
   animated_react_button:
+  flutter_svg:
+  just_audio:
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +77,9 @@ flutter:
     - assets/
     - assets/images/
     - assets/fonts/
+    - assets/svgs/
+    - assets/sounds/
+
 
   #   - images/a_dot_ham.jpeg
 
