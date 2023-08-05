@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gg_tv/models/user.dart';
 import 'package:gg_tv/styles.dart';
+import 'package:gg_tv/widgets/profile_games_for_user.dart';
 
 class UserProfileScreen extends StatelessWidget {
   UserProfileScreen({super.key});
@@ -13,6 +15,7 @@ class UserProfileScreen extends StatelessWidget {
     "stars": 31,
     "ups": 41,
     "downs": 3,
+    "date_added": DateTime.now(),
     "bits": 0,
     "skin": '',
     "profile_boost": false,
@@ -53,19 +56,20 @@ class UserProfileScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                         color: Colors.red,
                         borderRadius: BorderRadius.circular(4)),
-                    child: Icon(Icons.play_arrow_rounded),
+                    child: const Icon(Icons.play_arrow_rounded),
                   ),
                   Container(
                     decoration: BoxDecoration(
                         color: Colors.purple,
                         borderRadius: BorderRadius.circular(4)),
-                    child: Icon(Icons.video_call_rounded),
+                    child: const Icon(Icons.video_call_rounded),
                   ),
                   Container(
                     decoration: BoxDecoration(
                         color: Colors.green,
                         borderRadius: BorderRadius.circular(4)),
-                    child: Icon(Icons.keyboard_double_arrow_right_outlined),
+                    child:
+                        const Icon(Icons.keyboard_double_arrow_right_outlined),
                   )
                 ],
               ),
@@ -113,28 +117,10 @@ class UserProfileScreen extends StatelessWidget {
                 ),
               ],
             ),
-            Container(
-              padding: const EdgeInsets.all(12.0),
-              width: _W * .9,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-              child: Column(
-                children: [
-                  Row(
-                    children: const [Text('My Top Games')],
-                  ),
-                  ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: 5,
-                      itemBuilder: (context, i) {
-                        return TopGamesTile(user: _u);
-                      })
-                ],
-              ),
-            ),
+            const GamesForUser(),
             GridView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     childAspectRatio: 0.5,
@@ -142,96 +128,45 @@ class UserProfileScreen extends StatelessWidget {
                     mainAxisSpacing: 10),
                 itemCount: 21,
                 itemBuilder: (context, i) {
-                  return Container(
-                    height: MediaQuery.of(context).size.height * .5,
-                    decoration: BoxDecoration(
-                        color: Colors.amber[50],
-                        borderRadius: BorderRadius.circular(8)),
-                    child: Center(
-                      child: Text("${2}",
-                          style: AppStyles.giga18Text.copyWith(fontSize: 34)),
-                    ),
+                  return Stack(
+                    children: [
+                      Container(
+                        height: MediaQuery.of(context).size.height * .5,
+                        decoration: BoxDecoration(
+                            color: Colors.amber[50],
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Center(
+                          child: Text("${2}",
+                              style:
+                                  AppStyles.giga18Text.copyWith(fontSize: 34)),
+                        ),
+                      ),
+                      Positioned(
+                          bottom: 15,
+                          right: 10,
+                          child: Row(
+                            children: [
+                              const Icon(Icons.play_arrow_outlined,
+                                  color: Colors.white, size: 22),
+                              Text(
+                                '184',
+                                style:
+                                    AppStyles.giga18Text.copyWith(fontSize: 16),
+                              )
+                            ],
+                          ))
+                    ],
                   );
                 }),
-            SizedBox(height: 80),
+            const SizedBox(height: 80),
           ],
         ),
       ),
-    );
-  }
-}
-
-class TopGamesTile extends StatelessWidget {
-  final UserModel user;
-  const TopGamesTile({
-    required this.user,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            image: const DecorationImage(
-                image: NetworkImage(
-                    'https://cdn.bleacherreport.net/images/team_logos/328x328/valorant.png'),
-                fit: BoxFit.cover)),
-      ),
-      title: const Text('Valorant', style: AppStyles.giga18Text),
-      subtitle: Row(
-        children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  stops: [0.0, 2.2],
-                  colors: [
-                    Color.fromARGB(255, 52, 251, 155),
-                    AppStyles.backgroundColor
-                  ],
-                )),
-            child: const Icon(
-              Icons.keyboard_arrow_up_rounded,
-              size: 32,
-              color: Color.fromARGB(255, 91, 255, 42),
-            ),
-          ),
-          Text('1329', style: AppStyles.giga18Text.copyWith(fontSize: 16)),
-          const SizedBox(width: 20),
-          const Icon(
-            Icons.keyboard_arrow_down_rounded,
-            size: 22,
-            color: Color.fromARGB(255, 255, 65, 61),
-          ),
-          Text('43', style: AppStyles.giga18Text.copyWith(fontSize: 12)),
-          const SizedBox(width: 20),
-          Container(
-            width: 22,
-            height: 22,
-            decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  stops: [0.0, 2.2],
-                  colors: [
-                    Color.fromARGB(255, 255, 255, 160),
-                    AppStyles.backgroundColor
-                  ],
-                )),
-            child: const Icon(
-              Icons.star_rounded,
-              size: 20,
-              color: Color.fromRGBO(255, 202, 44, 1),
-            ),
-          ),
-          Text('201', style: AppStyles.giga18Text.copyWith(fontSize: 12)),
-        ],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          var _fs = FirebaseFirestore.instance.collection('users');
+          _fs.add(_testuser);
+        },
       ),
     );
   }

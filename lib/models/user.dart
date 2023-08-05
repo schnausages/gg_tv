@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
@@ -57,3 +59,5 @@ class UserModel {
     // isArtificial = json['is_artificial'];
   }
 }
+
+// var c = Color(0xFF0BD7FA);

@@ -109,90 +109,93 @@ class _TabBasePageState extends State<TabBasePage> {
     final double _buttonWidth = _w * .2;
 
     return Scaffold(
+        resizeToAvoidBottomInset: false, //test thesefor nav bar
         body: Stack(
-      alignment: Alignment.bottomCenter,
-      children: [
-        PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: _screens,
-        ),
-        Container(
-          width: _w,
-          height: 55,
-          decoration: BoxDecoration(
-              color: _pageIndex == 0
-                  ? Colors.transparent
-                  : const Color.fromARGB(255, 30, 29, 31),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
-              )),
-          child: Row(
-            children: [
-              SizedBox(
-                width: _buttonWidth,
-                height: 55,
-                child: MaterialButton(
-                  onPressed: () => _onItemTapped(0),
-                  child: _playArrow(_pageIndex),
-                ),
-              ),
-              SizedBox(
-                width: _buttonWidth,
-                height: 55,
-                child: MaterialButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.only(topLeft: Radius.circular(12))),
-                  onPressed: () => _onItemTapped(1),
-                  child: Icon(
-                    Icons.leaderboard_rounded,
-                    color: _pageIndex == 1 ? _activeColor : _inactiveColor,
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: _buttonWidth,
-                height: 55,
-                child: MaterialButton(
-                  onPressed: () => _onItemTapped(2),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: SvgPicture.asset(
-                      'assets/svgs/plus.svg',
-                      color: Colors.white70,
+          alignment: Alignment.bottomCenter,
+          children: [
+            PageView(
+              controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: _screens,
+            ),
+            Container(
+              width: _w,
+              height: 55,
+              decoration: BoxDecoration(
+                  color: _pageIndex == 0
+                      ? Colors.transparent
+                      : const Color.fromARGB(255, 30, 29, 31),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  )),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: _buttonWidth,
+                    height: 55,
+                    child: MaterialButton(
+                      onPressed: () => _onItemTapped(0),
+                      child: _playArrow(_pageIndex),
                     ),
                   ),
-                  // icon: Icon(Icons.add,
-                  //     color: _pageIndex == 2 ? _activeColor : _inactiveColor),
-                ),
+                  SizedBox(
+                    width: _buttonWidth,
+                    height: 55,
+                    child: MaterialButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.only(topLeft: Radius.circular(12))),
+                      onPressed: () => _onItemTapped(1),
+                      child: Icon(
+                        Icons.leaderboard_rounded,
+                        color: _pageIndex == 1 ? _activeColor : _inactiveColor,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: _buttonWidth,
+                    height: 55,
+                    child: MaterialButton(
+                      onPressed: () => _onItemTapped(2),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: SvgPicture.asset(
+                          'assets/svgs/plus.svg',
+                          color: Colors.white70,
+                        ),
+                      ),
+                      // icon: Icon(Icons.add,
+                      //     color: _pageIndex == 2 ? _activeColor : _inactiveColor),
+                    ),
+                  ),
+                  SizedBox(
+                    width: _buttonWidth,
+                    height: 55,
+                    child: MaterialButton(
+                      onPressed: () => _onItemTapped(3),
+                      child: Icon(Icons.leaderboard_rounded,
+                          color:
+                              _pageIndex == 3 ? _activeColor : _inactiveColor),
+                    ),
+                  ),
+                  SizedBox(
+                    width: _buttonWidth,
+                    height: 55,
+                    child: MaterialButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.only(topRight: Radius.circular(12))),
+                      onPressed: () => _onItemTapped(4),
+                      child: Icon(Icons.person_2,
+                          color:
+                              _pageIndex == 4 ? _activeColor : _inactiveColor),
+                    ),
+                  )
+                ],
               ),
-              SizedBox(
-                width: _buttonWidth,
-                height: 55,
-                child: MaterialButton(
-                  onPressed: () => _onItemTapped(3),
-                  child: Icon(Icons.leaderboard_rounded,
-                      color: _pageIndex == 3 ? _activeColor : _inactiveColor),
-                ),
-              ),
-              SizedBox(
-                width: _buttonWidth,
-                height: 55,
-                child: MaterialButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.only(topRight: Radius.circular(12))),
-                  onPressed: () => _onItemTapped(4),
-                  child: Icon(Icons.person_2,
-                      color: _pageIndex == 4 ? _activeColor : _inactiveColor),
-                ),
-              )
-            ],
-          ),
-        )
-      ],
-    ));
+            )
+          ],
+        ));
   }
 }
