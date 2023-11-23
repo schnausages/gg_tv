@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gg_tv/models/game.dart';
 import 'package:gg_tv/styles.dart';
@@ -11,11 +12,14 @@ class GamesForUser extends StatefulWidget {
 }
 
 class _GamesForUserState extends State<GamesForUser> {
+  final String _uid = FirebaseAuth.instance.currentUser!.uid;
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
       fetchGamesData() async {
-    var _gamesForUser = await FirebaseFirestore.instance
+    QuerySnapshot<Map<String, dynamic>> _gamesForUser = await FirebaseFirestore
+        .instance
         .collection('users')
-        .where('username', isEqualTo: "OpTic_yupper3")
+        .where('id', isEqualTo: _uid)
+        .limit(1)
         .get()
         .then((value) => value.docs.first.reference
             .collection('games_for_user')
@@ -27,7 +31,6 @@ class _GamesForUserState extends State<GamesForUser> {
   late Future _getGamesData;
   @override
   void initState() {
-    // TODO: implement initState
     _getGamesData = fetchGamesData();
     super.initState();
   }
@@ -40,7 +43,11 @@ class _GamesForUserState extends State<GamesForUser> {
         future: _getGamesData,
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
+            return SizedBox(
+              height: 80,
+              width: 80,
+              child: Image.asset('assets/images/gg_loading.gif'),
+            );
           } else if (snapshot.connectionState == ConnectionState.done) {
             return Container(
               padding: const EdgeInsets.all(12.0),
@@ -48,25 +55,29 @@ class _GamesForUserState extends State<GamesForUser> {
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
               child: Column(
                 children: [
-                  Row(
-                    children: const [
-                      Text('My Top Games', style: AppStyles.giga18Text)
-                    ],
-                  ),
-                  ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (context, i) {
-                        GameModel _game =
-                            GameModel.fromJson(snapshot.data[i].data());
-                        return TopGamesTile(gameModel: _game);
-                      })
+                  if (snapshot.data.length > 0)
+                    const Row(
+                      children: [
+                        Text('My Top Games', style: AppStyles.giga18Text)
+                      ],
+                    ),
+                  if (snapshot.data.length < 1)
+                    const Text('No games yet...', style: AppStyles.giga18Text),
+                  if (snapshot.data.length > 0)
+                    ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (context, i) {
+                          GameModel _game =
+                              GameModel.fromJson(snapshot.data[i].data());
+                          return TopGamesTile(gameModel: _game);
+                        })
                 ],
               ),
             );
           } else {
-            return Text('errrrrr', style: AppStyles.giga18Text);
+            return const Text('errrrrr', style: AppStyles.giga18Text);
           }
         });
   }
@@ -94,21 +105,18 @@ class TopGamesTile extends StatelessWidget {
       title: Text(gameModel.gameTitle, style: AppStyles.giga18Text),
       subtitle: Row(
         children: [
-          Container(
+          const SizedBox(
             width: 32,
             height: 32,
-            decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  stops: [0.0, 2.2],
-                  colors: [
-                    Color.fromARGB(255, 52, 251, 155),
-                    AppStyles.backgroundColor
-                  ],
-                )),
-            child: const Icon(
+            child: Icon(
               Icons.keyboard_arrow_up_rounded,
               size: 32,
+              shadows: [
+                BoxShadow(
+                    color: Color.fromARGB(255, 52, 251, 155),
+                    blurRadius: 4,
+                    spreadRadius: 0)
+              ],
               color: Color.fromARGB(255, 91, 255, 42),
             ),
           ),
@@ -123,21 +131,18 @@ class TopGamesTile extends StatelessWidget {
           Text(gameModel.downs.toString(),
               style: AppStyles.giga18Text.copyWith(fontSize: 12)),
           const SizedBox(width: 20),
-          Container(
+          const SizedBox(
             width: 22,
             height: 22,
-            decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  stops: [0.0, 2.2],
-                  colors: [
-                    Color.fromARGB(255, 255, 255, 160),
-                    AppStyles.backgroundColor
-                  ],
-                )),
-            child: const Icon(
+            child: Icon(
               Icons.star_rounded,
               size: 20,
+              shadows: [
+                BoxShadow(
+                    color: Color.fromARGB(255, 241, 255, 133),
+                    blurRadius: 4,
+                    spreadRadius: 0)
+              ],
               color: Color.fromRGBO(255, 202, 44, 1),
             ),
           ),

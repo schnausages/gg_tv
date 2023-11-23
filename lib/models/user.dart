@@ -1,11 +1,8 @@
-import 'dart:ui';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class UserModel {
   String? username;
+
+  final String userId;
   String? pfp;
-  String? userId;
   int? lastActive;
   bool? profileBoosted;
   int? ups;
@@ -16,8 +13,8 @@ class UserModel {
   String? skin;
 
   UserModel({
-    this.userId,
-    this.username,
+    required this.userId,
+    required this.username,
     this.pfp,
     this.bits,
     this.skin,

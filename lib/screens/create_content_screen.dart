@@ -32,6 +32,10 @@ class _CreateContentScreenState extends State<CreateContentScreen> {
     super.initState();
   }
 
+  // TODO: add a page view instead of all on one page? and last page is
+  // review and post page then show success screen (like payout screen)
+  // then animate back to first page
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

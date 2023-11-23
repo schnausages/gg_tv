@@ -7,9 +7,9 @@ class PostModel {
   final String pfp;
   final String userId;
   final DateTime dateAdded;
-  final int ups;
-  final int downs;
-  final int stars;
+  final List<String> ups;
+  final List<String> downs;
+  final List<String> stars;
   final String url;
   final String gameTitle;
   final String gameIconUrl;

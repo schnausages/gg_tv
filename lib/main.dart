@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:gg_tv/screens/auth_screens/landing_screen.dart';
 import 'package:gg_tv/screens/leaderboard_screen.dart';
 import 'package:gg_tv/screens/gg_feed.dart';
 import 'package:gg_tv/screens/user_profile_screen.dart';
+import 'package:gg_tv/services/auth_service.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'screens/create_content_screen.dart';
 
@@ -22,13 +28,23 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        primarySwatch: Colors.purple,
-      ),
-      home: const TabBasePage(),
+    return MultiProvider(
+      providers: [ChangeNotifierProvider.value(value: AuthService())],
+      child: Consumer<AuthService>(
+          builder: (ctx, auth, _) => MaterialApp(
+                darkTheme: ThemeData.dark(),
+                debugShowCheckedModeBanner: false,
+                home: auth.isAuth
+                    // ? TabBarScreen()
+                    ? TabBasePage()
+                    : FutureBuilder(
+                        future: auth.tryAutoLogin(),
+                        builder: (ctx, authResultSnapshot) =>
+                            authResultSnapshot.connectionState ==
+                                    ConnectionState.waiting
+                                ? const LaunchWaitingScreen()
+                                : const LandingScreen()),
+              )),
     );
   }
 }
@@ -52,32 +68,6 @@ class _TabBasePageState extends State<TabBasePage> {
   int _pageIndex = 1;
   final Color _activeColor = const Color(0xFFE23FFF);
   final Color _inactiveColor = const Color.fromARGB(255, 72, 65, 77);
-
-  Widget _playArrow(int index) {
-    if (index == 0) {
-      return Stack(
-        alignment: Alignment.center,
-        children: [
-          Icon(
-            Icons.play_arrow_rounded,
-            color: _activeColor,
-            size: 36,
-          ),
-          const Icon(
-            Icons.play_arrow_rounded,
-            color: Color.fromARGB(255, 250, 222, 255),
-            size: 26,
-          ),
-        ],
-      );
-    } else {
-      return Icon(
-        Icons.play_arrow_rounded,
-        color: _inactiveColor,
-        size: 24,
-      );
-    }
-  }
 
   void _onItemTapped(int index) {
     print(index);
@@ -120,7 +110,7 @@ class _TabBasePageState extends State<TabBasePage> {
             ),
             Container(
               width: _w,
-              height: 55,
+              height: 70,
               decoration: BoxDecoration(
                   color: _pageIndex == 0
                       ? Colors.transparent
@@ -136,7 +126,11 @@ class _TabBasePageState extends State<TabBasePage> {
                     height: 55,
                     child: MaterialButton(
                       onPressed: () => _onItemTapped(0),
-                      child: _playArrow(_pageIndex),
+                      child: Icon(
+                        Icons.play_arrow_rounded,
+                        size: 34,
+                        color: _pageIndex == 0 ? _activeColor : _inactiveColor,
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -197,5 +191,92 @@ class _TabBasePageState extends State<TabBasePage> {
             )
           ],
         ));
+  }
+}
+
+class LaunchWaitingScreen extends StatelessWidget {
+  const LaunchWaitingScreen({Key? key}) : super(key: key);
+  static const List<String> _messages = [
+    'Go for Ws',
+    'Take no Ls',
+    'Celebrate Ws'
+  ];
+
+  String generateWelcome(int second) {
+    if (second > 40) {
+      return _messages[2];
+    } else if (second > 20) {
+      return _messages[1];
+    } else {
+      return _messages[0];
+    }
+  }
+
+  LinearGradient generateGradient(int second) {
+    if (second > 40) {
+      return const LinearGradient(
+          colors: [Colors.deepPurpleAccent, Color.fromRGBO(74, 20, 140, 1)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter);
+    } else if (second > 20) {
+      return const LinearGradient(
+          colors: [Colors.cyanAccent, Color.fromRGBO(83, 109, 254, 1)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter);
+    } else {
+      return const LinearGradient(
+          colors: [Colors.pinkAccent, Colors.deepPurple],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    int _second = DateTime.now().second;
+    return Scaffold(
+        body: Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      decoration: BoxDecoration(gradient: generateGradient(_second)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(height: 10),
+          Container(
+            width: 100,
+            height: 100,
+            child: Platform.isIOS
+                ? const CupertinoActivityIndicator(radius: 20)
+                : const Center(
+                    child: CircularProgressIndicator(
+                      backgroundColor: Colors.white,
+                    ),
+                  ),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'WorL',
+            softWrap: true,
+            style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Ubuntu',
+                fontSize: 22,
+                fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            generateWelcome(_second),
+            softWrap: true,
+            style: const TextStyle(
+                color: Colors.white,
+                fontFamily: 'Ubuntu',
+                fontSize: 22,
+                fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    ));
   }
 }

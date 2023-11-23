@@ -48,7 +48,12 @@ dependencies:
   animated_react_button:
   flutter_svg:
   just_audio:
-
+  provider:
+  path:
+  shared_preferences:
+  # focus_detector:
+  visibility_detector:
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

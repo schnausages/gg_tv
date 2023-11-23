@@ -119,21 +119,18 @@ class LeaderboardTile extends StatelessWidget {
       title: Text(user.username!, style: AppStyles.giga18Text),
       subtitle: Row(
         children: [
-          Container(
+          const SizedBox(
             width: 32,
             height: 32,
-            decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  stops: [0.0, 2.2],
-                  colors: [
-                    Color.fromARGB(255, 52, 251, 155),
-                    AppStyles.backgroundColor
-                  ],
-                )),
-            child: const Icon(
+            child: Icon(
               Icons.keyboard_arrow_up_rounded,
               size: 32,
+              shadows: [
+                BoxShadow(
+                    color: Color.fromARGB(255, 52, 251, 155),
+                    blurRadius: 4,
+                    spreadRadius: 0)
+              ],
               color: Color.fromARGB(255, 91, 255, 42),
             ),
           ),
