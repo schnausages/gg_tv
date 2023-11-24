@@ -2,6 +2,7 @@ import 'package:animated_react_button/animated_react_button.dart';
 import 'package:flutter/material.dart';
 import 'package:gg_tv/models/post.dart';
 import 'package:gg_tv/styles.dart';
+import 'package:gg_tv/widgets/base_snackbar.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -13,6 +14,7 @@ class FeedVideoItem extends StatefulWidget {
   final bool upVoted;
   final bool downVoted;
   final bool starVoted;
+  final bool canVoteStar;
 
   const FeedVideoItem(
       {super.key,
@@ -21,6 +23,7 @@ class FeedVideoItem extends StatefulWidget {
       required this.upPress,
       required this.downPress,
       required this.upVoted,
+      required this.canVoteStar,
       required this.downVoted,
       required this.starVoted});
 
@@ -132,6 +135,7 @@ class _FeedVideoItemState extends State<FeedVideoItem> {
                   _VideoActionItems(
                     post: widget.post,
                     starPress: widget.starPress,
+                    canVoteStar: widget.canVoteStar,
                     upPress: widget.upPress,
                     downPress: widget.downPress,
                     downVoted: widget.downVoted,
@@ -162,12 +166,14 @@ class _VideoActionItems extends StatefulWidget {
   final Function upPress;
   final Function downPress;
   final bool upVoted;
+  final bool canVoteStar;
   final bool downVoted;
   final bool starVoted;
 
   const _VideoActionItems(
       {super.key,
       required this.post,
+      required this.canVoteStar,
       required this.starPress,
       required this.upPress,
       required this.downPress,
@@ -209,10 +215,17 @@ class __VideoActionItemsState extends State<_VideoActionItems>
               Color.fromARGB(255, 253, 237, 18),
               Colors.white
             ],
+            canVote: widget.canVoteStar,
             onPressed: () {
-              widget.starPress();
-              isStarred = true;
-              setState(() {});
+              if (!widget.starVoted || widget.canVoteStar) {
+                widget.starPress();
+                isStarred = true;
+                setState(() {});
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    MiscWidgets.baseSnackbar(
+                        message: 'No daily stars left', success: false));
+              }
             }),
         Text('123',
             style: AppStyles.giga18Text.copyWith(fontWeight: FontWeight.w500)),
@@ -223,9 +236,10 @@ class __VideoActionItemsState extends State<_VideoActionItems>
             iconSize: 54,
             defaultIcon: Icons.keyboard_arrow_up_rounded,
             showSplash: true,
+            // canVote: true,
             onPressed: () {
               widget.upPress();
-              if (!voted)
+              if (!widget.upVoted)
                 setState(() {
                   voted = true;
                 });
@@ -239,10 +253,11 @@ class __VideoActionItemsState extends State<_VideoActionItems>
             iconSize: 54,
             defaultIcon: Icons.keyboard_arrow_down_rounded,
             showSplash: true,
+            // canVote: true,
             colors: [Colors.red, Color.fromARGB(255, 135, 0, 0), Colors.black],
             onPressed: () {
               widget.downPress();
-              if (!voted)
+              if (!widget.downVoted)
                 setState(() {
                   voted = true;
                 });

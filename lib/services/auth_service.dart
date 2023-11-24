@@ -137,7 +137,10 @@ class AuthService with ChangeNotifier {
     int _millsecLastStar = extractedData['last_star'] ?? 000000000000;
     DateTime _lastStarTimestamp =
         DateTime.fromMillisecondsSinceEpoch(_millsecLastStar);
-    if (_lastStarTimestamp.difference(DateTime.now()).inDays > 0) {
+    print(
+        "${_lastStarTimestamp.difference(DateTime.now()).inSeconds > 10} PURT hur date check with LAST_STAR OF ${_lastStarTimestamp}");
+    if (DateTime.now().difference(_lastStarTimestamp).inSeconds > 10) {
+      print("PURT SETTING FALSE");
       extractedData['star_used'] = false;
     }
 
@@ -160,8 +163,8 @@ class AuthService with ChangeNotifier {
           .get()
           .then((snapshot) async {
         var userDoc = snapshot.docs.first;
-        Timestamp lastActiveTimestamp = userDoc.data()['last_active'] ??
-            TimeOfDay.fromDateTime(DateTime.now());
+        Timestamp lastActiveTimestamp =
+            userDoc.data()['last_active'] ?? Timestamp.fromDate(DateTime.now());
         DateTime lastActiveDate = lastActiveTimestamp.toDate();
         print(lastActiveDate.difference(DateTime.now()).inDays);
         if (lastActiveDate.difference(DateTime.now()).inDays < 0) {
