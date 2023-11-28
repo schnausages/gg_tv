@@ -1,10 +1,14 @@
 import 'package:animated_react_button/animated_react_button.dart';
 import 'package:flutter/material.dart';
 import 'package:gg_tv/models/post.dart';
+import 'package:gg_tv/services/misc_services.dart';
 import 'package:gg_tv/styles.dart';
 import 'package:gg_tv/widgets/base_snackbar.dart';
+import 'package:gg_tv/widgets/misc/pull_pill.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+
+import 'misc/info_sheet.dart';
 
 class FeedVideoItem extends StatefulWidget {
   final PostModel post;
@@ -33,7 +37,8 @@ class FeedVideoItem extends StatefulWidget {
 
 class _FeedVideoItemState extends State<FeedVideoItem> {
   late VideoPlayerController _controller;
-
+  bool _expanded = false;
+  late int _engagementMetric;
   Future<bool> _incrementView() async {
     await Future.delayed(const Duration(seconds: 1));
 
@@ -43,6 +48,10 @@ class _FeedVideoItemState extends State<FeedVideoItem> {
   @override
   void initState() {
     super.initState();
+    _engagementMetric = widget.post.downs.length +
+        widget.post.ups.length +
+        (widget.post.stars.length * 2) +
+        widget.post.commentCount;
     _controller = VideoPlayerController.networkUrl(Uri.parse(widget.post.url))
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
@@ -97,63 +106,153 @@ class _FeedVideoItemState extends State<FeedVideoItem> {
               ),
             ),
           // https://cdn.bleacherreport.net/images/team_logos/328x328/valorant.png
+
           Positioned(
               bottom: 80,
               left: 10,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.post.username,
-                    style: const TextStyle(
-                        fontFamily: 'Giga',
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'on ${widget.post.gameTitle}',
-                        style: TextStyle(
-                            fontFamily: 'Giga',
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18),
-                      ),
-                    ],
-                  )
-                ],
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  children: [
+                    _MetricChips(
+                      plays: 431,
+                      engagementIndex: _engagementMetric,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              image: DecorationImage(
+                                  image: MiscServices.generateUserPfp(
+                                      widget.post.user.pfp!),
+                                  fit: BoxFit.cover)),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 6.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(widget.post.user.username,
+                                  style: AppStyles.giga18Text),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(widget.post.game.gameTitle,
+                                      style: AppStyles.giga18Text
+                                          .copyWith(fontSize: 14)),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                        Spacer(),
+                        if (widget.post.description.isNotEmpty && !_expanded)
+                          GestureDetector(
+                            onTap: () async {
+                              _controller.pause();
+                              setState(() {
+                                _expanded = true;
+                              });
+                              await showModalBottomSheet(
+                                  context: context,
+                                  backgroundColor: Colors.black12,
+                                  shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(10),
+                                          topRight: Radius.circular(10))),
+                                  builder: (context) {
+                                    return _FeedVideoExpansionDetail(
+                                      description: widget.post.description,
+                                      username: widget.post.user.username,
+                                    );
+                                  }).then((value) {
+                                setState(() {
+                                  _expanded = false;
+                                });
+                                _controller.play();
+                              });
+                            },
+                            child: Container(
+                              width: 45,
+                              height: 50,
+                              decoration: BoxDecoration(color: Colors.white10),
+                              child: Center(
+                                child: const Icon(Icons.arrow_drop_up_rounded,
+                                    size: 38, color: Colors.white),
+                              ),
+                            ),
+                          ),
+
+                        //comments sheet
+                        if (!_expanded)
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(left: 4.0, right: 26.0),
+                            child: GestureDetector(
+                              onTap: () async {
+                                _controller.pause();
+                                setState(() {
+                                  _expanded = true;
+                                });
+                                await showModalBottomSheet(
+                                    context: context,
+                                    backgroundColor: Colors.black12,
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(10),
+                                            topRight: Radius.circular(10))),
+                                    builder: (context) {
+                                      return Text('comments here');
+                                    }).then((value) {
+                                  setState(() {
+                                    _expanded = false;
+                                  });
+                                  _controller.play();
+                                });
+                              },
+                              child: Container(
+                                width: 45,
+                                height: 50,
+                                decoration:
+                                    BoxDecoration(color: Colors.white10),
+                                child: Center(
+                                  child: const Icon(Icons.chat_bubble_rounded,
+                                      color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               )),
-          Positioned(
-              right: 0,
-              top: 140,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _VideoActionItems(
-                    post: widget.post,
-                    starPress: widget.starPress,
-                    canVoteStar: widget.canVoteStar,
-                    upPress: widget.upPress,
-                    downPress: widget.downPress,
-                    downVoted: widget.downVoted,
-                    starVoted: widget.starVoted,
-                    upVoted: widget.upVoted,
-                  ),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        image: const DecorationImage(
-                            image: NetworkImage(
-                                'https://cdn.bleacherreport.net/images/team_logos/328x328/valorant.png'),
-                            fit: BoxFit.cover)),
-                  )
-                ],
-              ))
+          if (!_expanded)
+            Positioned(
+                right: 10,
+                bottom: 135,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _VideoActionItems(
+                      post: widget.post,
+                      starPress: widget.starPress,
+                      canVoteStar: widget.canVoteStar,
+                      upPress: widget.upPress,
+                      downPress: widget.downPress,
+                      downVoted: widget.downVoted,
+                      starVoted: widget.starVoted,
+                      upVoted: widget.upVoted,
+                      upCount: widget.post.ups.length,
+                      downCount: widget.post.downs.length,
+                      starCount: widget.post.stars.length,
+                    ),
+                  ],
+                )),
         ],
       ),
     );
@@ -169,6 +268,9 @@ class _VideoActionItems extends StatefulWidget {
   final bool canVoteStar;
   final bool downVoted;
   final bool starVoted;
+  final int upCount;
+  final int downCount;
+  final int starCount;
 
   const _VideoActionItems(
       {super.key,
@@ -179,7 +281,10 @@ class _VideoActionItems extends StatefulWidget {
       required this.downPress,
       required this.upVoted,
       required this.downVoted,
-      required this.starVoted});
+      required this.starVoted,
+      required this.upCount,
+      required this.downCount,
+      required this.starCount});
 
   @override
   State<_VideoActionItems> createState() => __VideoActionItemsState();
@@ -187,14 +292,20 @@ class _VideoActionItems extends StatefulWidget {
 
 class __VideoActionItemsState extends State<_VideoActionItems>
     with AutomaticKeepAliveClientMixin {
-  final SizedBox _box = const SizedBox(height: 4);
+  final SizedBox _box = const SizedBox(height: 12);
   bool voted = false; // add user voted if user is in up or down
   bool isStarred = false;
+  late int _upCount;
+  late int _downCount;
+  late int _starCount;
 
   @override
   void initState() {
     voted = widget.upVoted || widget.downVoted;
     isStarred = widget.starVoted;
+    _upCount = widget.upCount;
+    _downCount = widget.downCount;
+    _starCount = widget.starCount;
     super.initState();
   }
 
@@ -212,22 +323,25 @@ class __VideoActionItemsState extends State<_VideoActionItems>
             showSplash: true,
             colors: [
               Colors.yellow,
-              Color.fromARGB(255, 253, 237, 18),
+              const Color.fromARGB(255, 253, 237, 18),
               Colors.white
             ],
             canVote: widget.canVoteStar,
             onPressed: () {
               if (!widget.starVoted || widget.canVoteStar) {
                 widget.starPress();
-                isStarred = true;
-                setState(() {});
+
+                setState(() {
+                  isStarred = true;
+                  _starCount++;
+                });
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                     MiscWidgets.baseSnackbar(
                         message: 'No daily stars left', success: false));
               }
             }),
-        Text('123',
+        Text(_starCount.toString(),
             style: AppStyles.giga18Text.copyWith(fontWeight: FontWeight.w500)),
         _box,
         AnimatedReactButton(
@@ -242,9 +356,10 @@ class __VideoActionItemsState extends State<_VideoActionItems>
               if (!widget.upVoted)
                 setState(() {
                   voted = true;
+                  _upCount++;
                 });
             }),
-        Text('3434',
+        Text(_upCount.toString(),
             style: AppStyles.giga18Text.copyWith(fontWeight: FontWeight.w500)),
         _box,
         AnimatedReactButton(
@@ -254,41 +369,149 @@ class __VideoActionItemsState extends State<_VideoActionItems>
             defaultIcon: Icons.keyboard_arrow_down_rounded,
             showSplash: true,
             // canVote: true,
-            colors: [Colors.red, Color.fromARGB(255, 135, 0, 0), Colors.black],
+            colors: [
+              Colors.red,
+              const Color.fromARGB(255, 135, 0, 0),
+              Colors.black
+            ],
             onPressed: () {
               widget.downPress();
               if (!widget.downVoted)
                 setState(() {
                   voted = true;
+                  _downCount++;
                 });
             }),
-        Text('69',
+        Text(_downCount.toString(),
             style: AppStyles.giga18Text.copyWith(fontWeight: FontWeight.w500)),
-        SizedBox(height: 50),
+        const SizedBox(height: 50),
         _box,
-        const Icon(Icons.play_arrow_rounded,
-            shadows: [
-              BoxShadow(blurRadius: 4, spreadRadius: 0, color: Colors.black38)
-            ],
-            color: Colors.white,
-            size: 30),
-        Text(
-          '343',
-          style: AppStyles.giga18Text.copyWith(fontSize: 16),
-        ),
-        _box,
-        const Icon(
-          Icons.chat_bubble_outline_rounded,
-          color: Colors.white,
-          shadows: [
-            BoxShadow(blurRadius: 4, spreadRadius: 0, color: Colors.black38)
-          ],
-          size: 30,
-        ),
+        if (widget.post.game.logoUrl!.isNotEmpty)
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                    image: NetworkImage(widget.post.game.logoUrl!),
+                    fit: BoxFit.cover)),
+          ),
+        if (widget.post.game.logoUrl!.isEmpty)
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: widget.post.game.primaryColorHex,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Center(
+              child: Text(
+                widget.post.game.fallbackLetter,
+                style: AppStyles.giga18Text,
+              ),
+            ),
+          )
       ],
     );
   }
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class _FeedVideoExpansionDetail extends StatelessWidget {
+  final String username;
+  final String description;
+  const _FeedVideoExpansionDetail(
+      {super.key, required this.username, required this.description});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          child: const PullPill(pillColor: Colors.white70),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: SizedBox(
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height * .325,
+            child: SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics()),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Row(
+                        children: [Text(username)],
+                      ),
+                    ),
+                    Text(
+                      description,
+                      style: AppStyles.giga18Text.copyWith(fontSize: 14),
+                      softWrap: true,
+                    ),
+                  ],
+                )),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MetricChips extends StatelessWidget {
+  final int plays;
+  final int engagementIndex;
+  const _MetricChips(
+      {super.key, required this.plays, required this.engagementIndex});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+          decoration: BoxDecoration(
+              color: Colors.white12, borderRadius: BorderRadius.circular(2)),
+          child: Row(
+            children: [
+              Icon(Icons.play_arrow_rounded, color: Colors.white, size: 18),
+              Text(plays.toString())
+            ],
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            buildInfoSheet(context,
+                headerText: 'Post engagement',
+                infoText:
+                    'Total engagement represents all up, down, and star votes (which count as 2) plus the total comment count',
+                actionButtonText: 'Visit Shop',
+                onActionButtonPress: () {});
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(left: 4.0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+              decoration: BoxDecoration(
+                  color: Colors.white12,
+                  borderRadius: BorderRadius.circular(2)),
+              child: Row(
+                children: [
+                  Icon(Icons.trending_up_rounded,
+                      color: Colors.white, size: 18),
+                  Text(engagementIndex.toString())
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }

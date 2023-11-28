@@ -100,7 +100,9 @@ class TopGamesTile extends StatelessWidget {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
-                image: NetworkImage(gameModel.logoUrl), fit: BoxFit.cover)),
+                image: NetworkImage(gameModel.logoUrl ??
+                    'https://cdn-icons-png.flaticon.com/512/3408/3408506.png'),
+                fit: BoxFit.cover)),
       ),
       title: Text(gameModel.gameTitle, style: AppStyles.giga18Text),
       subtitle: Row(
@@ -120,7 +122,7 @@ class TopGamesTile extends StatelessWidget {
               color: Color.fromARGB(255, 91, 255, 42),
             ),
           ),
-          Text(gameModel.ups.toString(),
+          Text(77.toString(),
               style: AppStyles.giga18Text.copyWith(fontSize: 16)),
           const SizedBox(width: 20),
           const Icon(
@@ -128,7 +130,7 @@ class TopGamesTile extends StatelessWidget {
             size: 22,
             color: Color.fromARGB(255, 255, 65, 61),
           ),
-          Text(gameModel.downs.toString(),
+          Text(12.toString(),
               style: AppStyles.giga18Text.copyWith(fontSize: 12)),
           const SizedBox(width: 20),
           const SizedBox(
@@ -146,7 +148,7 @@ class TopGamesTile extends StatelessWidget {
               color: Color.fromRGBO(255, 202, 44, 1),
             ),
           ),
-          Text(gameModel.stars.toString(),
+          Text(2.toString(),
               style: AppStyles.giga18Text.copyWith(fontSize: 12)),
         ],
       ),

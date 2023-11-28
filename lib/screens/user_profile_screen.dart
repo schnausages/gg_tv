@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gg_tv/models/user.dart';
+import 'package:gg_tv/screens/setup/setup_flow.dart';
 import 'package:gg_tv/services/auth_service.dart';
 import 'package:gg_tv/services/misc_services.dart';
 import 'package:gg_tv/styles.dart';
@@ -114,7 +115,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(_currentUser.username!,
+                          child: Text(_currentUser.username,
                               style:
                                   AppStyles.giga18Text.copyWith(fontSize: 20)),
                         ),
@@ -124,22 +125,26 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Flexible(
-                            child: TextField(
-                              autofocus: true,
-                              controller: _nameController,
-                              style: AppStyles.giga18Text,
-                              maxLength: 24,
-                              cursorColor: Colors.white,
-                              decoration: const InputDecoration(
-                                  contentPadding:
-                                      const EdgeInsets.only(left: 8),
-                                  border: InputBorder.none,
-                                  disabledBorder: InputBorder.none),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: TextField(
+                                autofocus: true,
+                                controller: _nameController,
+                                style:
+                                    AppStyles.giga18Text.copyWith(fontSize: 16),
+                                maxLength: 24,
+                                cursorColor: Colors.white,
+                                decoration: const InputDecoration(
+                                    counter: SizedBox(),
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.all(0),
+                                    border: InputBorder.none,
+                                    disabledBorder: InputBorder.none),
+                              ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: MaterialButton(
+                          if (_nameController.text != _currentUser.username)
+                            IconButton(
                               onPressed: () async {
                                 String _newUsername =
                                     _nameController.text.toLowerCase();
@@ -164,12 +169,29 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                           success: false));
                                 }
                               },
-                              child: Text('save'),
-                              color: Colors.purple[900],
+                              iconSize: 30,
+                              icon: Icon(Icons.check_circle_outline_rounded),
+                              color: Color.fromARGB(255, 58, 255, 104),
                             ),
+                          IconButton(
+                            onPressed: () async {
+                              setState(() {
+                                _nameChangeActive = false;
+                                _nameController.clear();
+                              });
+                            },
+                            iconSize: 30,
+                            icon: Icon(Icons.cancel),
+                            color: Color.fromARGB(255, 255, 76, 66),
                           )
                         ],
                       ),
+                    MaterialButton(
+                        child: Text('steup'),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                              MaterialPageRoute(builder: (ctx) => SetupFlow()));
+                        }),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 14, horizontal: 20),
@@ -318,43 +340,61 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             }
           }),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // var _fs = FirebaseFirestore.instance.collection('users');
-          // _fs.add(_testuser);
-          showModalBottomSheet(
-              backgroundColor: Colors.transparent,
-              context: context,
-              builder: (context) {
-                return Container(
-                  height: _h * .25,
-                  width: _W,
-                  decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12)),
-                      color: Color.fromARGB(255, 19, 25, 43)),
-                  child: GestureDetector(
-                    onTap: () async {
-                      await AuthService().logOut(context);
-                    },
-                    child: Center(
-                      child: Container(
-                        width: 100,
-                        height: 55,
-                        decoration: BoxDecoration(
-                            color: Colors.red[700],
-                            borderRadius: BorderRadius.circular(8)),
-                        child: Center(
-                          child: Text(
-                            'logout',
-                            style: AppStyles.giga18Text,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              });
+        onPressed: () async {
+          // var _col = Color(0xFFB3B3B3);
+          String _name = 'Roblox';
+          String _displayName = 'Roblox';
+          String _n = _name.replaceAll(' ', '');
+          String _id = _n.toLowerCase() +
+              DateTime.now().millisecondsSinceEpoch.toString();
+
+          Map<String, dynamic> _game = {
+            'game_title': _name,
+            'quick_title': _displayName,
+            'logo_url':
+                'https://upload.wikimedia.org/wikipedia/commons/7/7e/Roblox_Logo_2022.jpg?20220830054427',
+            'game_id': _id,
+            'game_primary_color': '0xFFB3B3B3'
+          };
+          var _fs = FirebaseFirestore.instance.collection('games_metadata');
+          await _fs.add(_game);
+          ScaffoldMessenger.of(context).showSnackBar(
+              MiscWidgets.baseSnackbar(message: 'game added', success: true));
+
+          // showModalBottomSheet(
+          //     backgroundColor: Colors.transparent,
+          //     context: context,
+          //     builder: (context) {
+          //       return Container(
+          //         height: _h * .25,
+          //         width: _W,
+          //         decoration: const BoxDecoration(
+          //             borderRadius: BorderRadius.only(
+          //                 topLeft: Radius.circular(12),
+          //                 topRight: Radius.circular(12)),
+          //             color: Color.fromARGB(255, 19, 25, 43)),
+          //         child: GestureDetector(
+          //           onTap: () async {
+          //             await AuthService().logOut(context);
+          //           },
+          //           child: Center(
+          //             child: Container(
+          //               width: 100,
+          //               height: 55,
+          //               decoration: BoxDecoration(
+          //                   color: Colors.red[700],
+          //                   borderRadius: BorderRadius.circular(8)),
+          //               child: Center(
+          //                 child: Text(
+          //                   'logout',
+          //                   style: AppStyles.giga18Text,
+          //                 ),
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //       );
+          //     });
         },
       ),
     );

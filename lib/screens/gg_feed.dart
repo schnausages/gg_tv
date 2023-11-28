@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gg_tv/models/game.dart';
 import 'package:gg_tv/models/post.dart';
+import 'package:gg_tv/models/user.dart';
 import 'package:gg_tv/services/misc_services.dart';
 import 'package:gg_tv/widgets/base_snackbar.dart';
 import 'package:gg_tv/widgets/feed_video.dart';
@@ -50,18 +52,27 @@ class _MainFeedScreenState extends State<MainFeedScreen> {
                     itemBuilder: (context, i) {
                       return FeedVideoItem(
                         post: PostModel(
-                            username: 'skittle_blob31',
-                            pfp: 'pfp',
-                            userId: 'userId',
+                            user: UserModel(
+                                userId: '',
+                                username: 'skittle_blob31',
+                                pfp: ''),
                             dateAdded: DateTime.now(),
                             ups: ['j8e2', 'w1wwd'],
-                            downs: ['ce2ec'],
-                            stars: [],
+                            downs: ['ce2ec', 'f434f3v3', 'f4343f443'],
+                            stars: ['wd23d23'],
+                            commentCount: 12,
+                            description:
+                                "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.\n\nIt has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages.\n\nMore recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
                             url:
                                 'https://assets.mixkit.co/videos/preview/mixkit-covering-a-strawberry-with-liquid-chocolate-on-a-lilac-background-41125-large.mp4',
                             views: 423,
-                            gameIconUrl: 'gameIconUrl',
-                            gameTitle: 'Modern Warfare 3'),
+                            game: GameModel(
+                                gameTitle: 'Modern Warfare 3',
+                                fallbackLetter: 'C',
+                                gameId: '',
+                                logoUrl:
+                                    'https://cdn2.steamgriddb.com/file/sgdb-cdn/icon/d8732349cbe3ba46021a86345bb98c4c/32/256x256.png',
+                                primaryColorHex: Color(0xFFFF2D61))),
                         downVoted: false,
                         starVoted: false,
                         upVoted: false,
