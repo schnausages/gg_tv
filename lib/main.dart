@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gg_tv/screens/auth_screens/landing_screen.dart';
+import 'package:gg_tv/screens/chall_screen.dart';
 import 'package:gg_tv/screens/leaderboard_screen.dart';
 import 'package:gg_tv/screens/gg_feed.dart';
 import 'package:gg_tv/screens/user_profile_screen.dart';
@@ -62,7 +63,7 @@ class _TabBasePageState extends State<TabBasePage> {
     const MainFeedScreen(),
     const LeaderboardScreen(),
     const CreateContentScreen(),
-    const LeaderboardScreen(),
+    const ChallScreen(),
     UserProfileScreen()
   ];
   int _pageIndex = 1;
@@ -152,15 +153,9 @@ class _TabBasePageState extends State<TabBasePage> {
                     height: 55,
                     child: MaterialButton(
                       onPressed: () => _onItemTapped(2),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: SvgPicture.asset(
-                          'assets/svgs/plus.svg',
-                          color: Colors.white70,
-                        ),
-                      ),
-                      // icon: Icon(Icons.add,
-                      //     color: _pageIndex == 2 ? _activeColor : _inactiveColor),
+                      child: Icon(Icons.add,
+                          color:
+                              _pageIndex == 2 ? _activeColor : _inactiveColor),
                     ),
                   ),
                   SizedBox(
@@ -168,9 +163,12 @@ class _TabBasePageState extends State<TabBasePage> {
                     height: 55,
                     child: MaterialButton(
                       onPressed: () => _onItemTapped(3),
-                      child: Icon(Icons.leaderboard_rounded,
-                          color:
-                              _pageIndex == 3 ? _activeColor : _inactiveColor),
+                      child: SvgPicture.asset(
+                        'assets/svgs/dual.svg',
+                        color: _pageIndex == 3 ? _activeColor : _inactiveColor,
+                        width: 30,
+                        height: 30,
+                      ),
                     ),
                   ),
                   SizedBox(

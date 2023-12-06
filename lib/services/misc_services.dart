@@ -25,7 +25,7 @@ class UserActionServices {
     _prefs.setString('cachedProfile', _m);
   }
 
-  static Future<dynamic> returnStoredKeyValue({required String key}) async {
+  static Future<dynamic?> returnStoredKeyValue({required String key}) async {
     final _prefs = await SharedPreferences.getInstance();
     final _stored =
         json.decode(_prefs.getString('cachedProfile')!) as Map<String, dynamic>;

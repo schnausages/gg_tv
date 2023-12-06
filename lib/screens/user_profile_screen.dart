@@ -341,25 +341,58 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           }),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // var _col = Color(0xFFB3B3B3);
-          String _name = 'Roblox';
-          String _displayName = 'Roblox';
-          String _n = _name.replaceAll(' ', '');
-          String _id = _n.toLowerCase() +
-              DateTime.now().millisecondsSinceEpoch.toString();
+          //add new user
 
-          Map<String, dynamic> _game = {
-            'game_title': _name,
-            'quick_title': _displayName,
-            'logo_url':
-                'https://upload.wikimedia.org/wikipedia/commons/7/7e/Roblox_Logo_2022.jpg?20220830054427',
-            'game_id': _id,
-            'game_primary_color': '0xFFB3B3B3'
-          };
-          var _fs = FirebaseFirestore.instance.collection('games_metadata');
-          await _fs.add(_game);
-          ScaffoldMessenger.of(context).showSnackBar(
-              MiscWidgets.baseSnackbar(message: 'game added', success: true));
+          // var _userDoc = await FirebaseFirestore.instance
+          //     .collection('users')
+          //     .where('username', isEqualTo: 'blarty287')
+          //     .limit(1)
+          //     .get()
+          //     .then((value) => value.docs.first.reference);
+          // await _userDoc.collection('games_for_user').add({
+          //   'game_title': 'Fortnite',
+          //   'ups': 54,
+          //   'downs': 3,
+          //   'stars': 1,
+          //   'username': 'blarty287',
+          //   'user_pfp': ''
+          // });
+          // await _userDoc.collection('games_for_user').add({
+          //   'game_title': 'Minecraft',
+          //   'ups': 453,
+          //   'downs': 78,
+          //   'stars': 4,
+          //   'username': 'blarty287',
+          //   'user_pfp': ''
+          // });
+          // await _userDoc.collection('games_for_user').add({
+          //   'game_title': 'Apex Legends',
+          //   'ups': 309,
+          //   'downs': 65,
+          //   'stars': 1,
+          //   'username': 'blarty287',
+          //   'user_pfp': ''
+          // });
+          // addnewgame
+          // var _col = Color(0xFFB3B3B3);
+          // String _name = 'Roblox';
+          // String _displayName = 'Roblox';
+          // String _n = _name.replaceAll(' ', '');
+          // String _id = _n.toLowerCase() +
+          //     DateTime.now().millisecondsSinceEpoch.toString();
+
+          // Map<String, dynamic> _game = {
+          //   'game_title': _name,
+          //   'quick_title': _displayName,
+          //   'logo_url':
+          //       'https://upload.wikimedia.org/wikipedia/commons/7/7e/Roblox_Logo_2022.jpg?20220830054427',
+          //   'game_id': _id,
+          //   'game_primary_color': '0xFFB3B3B3'
+          // };
+          // var _fs = FirebaseFirestore.instance.collection('games_metadata');
+          // await _fs.add(_game);
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //     MiscWidgets.baseSnackbar(message: 'game added', success: true));
 
           // showModalBottomSheet(
           //     backgroundColor: Colors.transparent,

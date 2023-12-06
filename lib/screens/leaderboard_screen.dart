@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gg_tv/models/user.dart';
 import 'package:gg_tv/styles.dart';
@@ -11,89 +12,174 @@ class LeaderboardScreen extends StatefulWidget {
 
 class _LeaderboardScreenState extends State<LeaderboardScreen> {
   int _selectedIndex = 0;
+  String selectedGame = 'Fortnite';
 
-  final Map<String, dynamic> _testuser = {
-    "username": "OpTic_yupper3",
-    "user_pfp":
-        "https://miro.medium.com/v2/resize:fit:720/format:webp/0*EAwg7WIIMhgnSfLf.png",
-    "id": "",
-    "stars": 31,
-    "ups": 41,
-    "downs": 3,
-    "bits": 0,
-    "skin": '',
-    "profile_boost": false,
-    "followers": 3,
-  };
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> getGameLeaderboard(
+      String gameTitle) async {
+    var query = await FirebaseFirestore.instance
+        .collectionGroup('games_for_user')
+        .where('game_title', isEqualTo: gameTitle)
+        .orderBy('ups', descending: true)
+        .get();
+    return query.docs;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppStyles.backgroundColor,
-      appBar: AppBar(
-        title: Text(
-          'Valorant Leaders',
-          style: AppStyles.giga18Text.copyWith(fontSize: 22),
+        backgroundColor: AppStyles.backgroundColor,
+        appBar: AppBar(
+          title: Text(
+            'Valorant Leaders',
+            style: AppStyles.giga18Text.copyWith(fontSize: 22),
+          ),
         ),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: 30,
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  physics: const AlwaysScrollableScrollPhysics(
-                      parent: BouncingScrollPhysics()),
-                  itemBuilder: ((context, index) => GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedIndex = index;
-                          });
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                                color: _selectedIndex == index
-                                    ? const Color.fromARGB(255, 255, 42, 113)
-                                    : Colors.white10,
-                                borderRadius: BorderRadius.circular(4)),
-                            child: Center(
-                              child: Text(
-                                'Fortnite',
-                                style:
-                                    AppStyles.giga18Text.copyWith(fontSize: 14),
+        body: FutureBuilder(
+            future: getGameLeaderboard(selectedGame),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: 30,
+                        child: ListView(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics()),
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                getGameLeaderboard('Fortnite');
+                                setState(() {
+                                  selectedGame = 'Fortnite';
+                                  _selectedIndex = 0;
+                                });
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 6),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                      color: _selectedIndex == 0
+                                          ? const Color.fromARGB(
+                                              255, 255, 42, 113)
+                                          : Colors.white10,
+                                      borderRadius: BorderRadius.circular(4)),
+                                  child: Center(
+                                    child: Text(
+                                      'Fortnite',
+                                      style: AppStyles.giga18Text
+                                          .copyWith(fontSize: 14),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                            GestureDetector(
+                              onTap: () {
+                                getGameLeaderboard('Minecraft');
+
+                                setState(() {
+                                  selectedGame = 'Minecraft';
+                                  _selectedIndex = 1;
+                                });
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 6),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                      color: _selectedIndex == 1
+                                          ? const Color.fromARGB(
+                                              255, 255, 42, 113)
+                                          : Colors.white10,
+                                      borderRadius: BorderRadius.circular(4)),
+                                  child: Center(
+                                    child: Text(
+                                      'Minecraft',
+                                      style: AppStyles.giga18Text
+                                          .copyWith(fontSize: 14),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                getGameLeaderboard('Apex Legends');
+
+                                setState(() {
+                                  selectedGame = 'Apex Legends';
+                                  _selectedIndex = 2;
+                                });
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 6),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                      color: _selectedIndex == 2
+                                          ? const Color.fromARGB(
+                                              255, 255, 42, 113)
+                                          : Colors.white10,
+                                      borderRadius: BorderRadius.circular(4)),
+                                  child: Center(
+                                    child: Text(
+                                      'Apex Legends',
+                                      style: AppStyles.giga18Text
+                                          .copyWith(fontSize: 14),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
                         ),
-                      ))),
-            ),
-          ),
-          ConstrainedBox(
-            constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * .75),
-            child: ListView.builder(
-                itemCount: 21,
-                shrinkWrap: true,
-                physics: const AlwaysScrollableScrollPhysics(
-                    parent: BouncingScrollPhysics()),
-                itemBuilder: (context, i) {
-                  UserModel _u = UserModel.fromJson(_testuser);
-                  return LeaderboardTile(
-                    user: _u,
-                  );
-                }),
-          ),
-        ],
-      ),
-    );
+                      ),
+                    ),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * .75),
+                      child: ListView.builder(
+                          itemCount: snapshot.data!.length,
+                          shrinkWrap: true,
+                          physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics()),
+                          itemBuilder: (context, i) {
+                            UserModel _u = UserModel(
+                                userId: '',
+                                username: snapshot.data![i]['username'],
+                                pfp: snapshot.data![i]['user_pfp'],
+                                ups: snapshot.data![i]['ups'],
+                                stars: snapshot.data![i]['stars'],
+                                downs: snapshot.data![i]['downs']);
+                            return LeaderboardTile(
+                              user: _u,
+                            );
+                          }),
+                    ),
+                  ],
+                );
+              } else {
+                return Center(
+                  child: SizedBox(
+                    height: 25,
+                    width: 60,
+                    child: Image.asset('assets/images/gg_loading.gif'),
+                  ),
+                );
+              }
+            }));
   }
 }
 
@@ -108,15 +194,17 @@ class LeaderboardTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-      leading: Container(
-        width: 50,
-        height: 50,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            image: DecorationImage(
-                image: NetworkImage(user.pfp!), fit: BoxFit.cover)),
-      ),
-      title: Text(user.username!, style: AppStyles.giga18Text),
+      leading: user.pfp != null
+          ? Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                      image: NetworkImage(user.pfp!), fit: BoxFit.cover)),
+            )
+          : Icon(Icons.person, color: Colors.white),
+      title: Text(user.username, style: AppStyles.giga18Text),
       subtitle: Row(
         children: [
           const SizedBox(

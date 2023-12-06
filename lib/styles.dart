@@ -6,5 +6,5 @@ class AppStyles {
       fontWeight: FontWeight.bold,
       color: Colors.white,
       fontSize: 18);
-  static const Color backgroundColor = Color.fromARGB(255, 23, 23, 23);
+  static const Color backgroundColor = Color(0xFF171717);
 }
