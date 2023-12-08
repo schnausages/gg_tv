@@ -12,11 +12,16 @@ class ChallScreen extends StatefulWidget {
 class _ChallScreenState extends State<ChallScreen> {
   late Future _getDuoPlay;
   bool _duoPlayActive = false;
+  bool _stackView = false;
   Future duoPlayMgmt() async {
     bool _active =
         await UserActionServices.returnStoredKeyValue(key: 'duo_play') ?? false;
+    bool _stack = await UserActionServices.returnStoredKeyValue(
+            key: 'stack_chall_view') ??
+        false;
     setState(() {
       _duoPlayActive = _active;
+      _stackView = _stack;
     });
   }
 
@@ -34,7 +39,6 @@ class _ChallScreenState extends State<ChallScreen> {
             future: _getDuoPlay,
             builder: ((context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                print("PURT DUO PLAY NOW ON? $_duoPlayActive");
                 return SizedBox(
                   width: _s.width,
                   height: _s.height,
@@ -47,6 +51,14 @@ class _ChallScreenState extends State<ChallScreen> {
                         return ChallVoteItem(
                           size: _s,
                           duoPlayActive: _duoPlayActive,
+                          stackView: _stackView,
+                          stackViewUpdate: () async {
+                            await UserActionServices.updateStorageKey(
+                                key: 'stack_chall_view', newValue: !_stackView);
+                            setState(() {
+                              _stackView = !_stackView;
+                            });
+                          },
                           duoPlayUpdate: () async {
                             await UserActionServices.updateStorageKey(
                                     key: 'duo_play', newValue: !_duoPlayActive)

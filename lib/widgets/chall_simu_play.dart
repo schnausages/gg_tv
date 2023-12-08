@@ -22,17 +22,11 @@ class _SimuPlayButtonState extends State<SimuPlayButton> {
         widget.onPress();
       },
       child: Container(
-        height: 45,
+        height: 50,
         width: 45,
-        child: Icon(
-            widget.duoPlayActive
-                ? Icons.double_arrow_sharp
-                : Icons.keyboard_arrow_right_rounded,
-            size: 32,
-            color: Colors.white),
-        decoration: BoxDecoration(
-            color: widget.duoPlayActive ? Colors.purple : Colors.white10,
-            borderRadius: BorderRadius.circular(4)),
+        color: widget.duoPlayActive ? Colors.purple : Colors.white10,
+        child: Icon(Icons.double_arrow_rounded,
+            size: widget.duoPlayActive ? 32 : 26, color: Colors.white),
       ),
     );
   }
@@ -46,12 +40,11 @@ class CommentBoxWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () {},
       child: Container(
-        height: 45,
+        height: 50,
         width: 45,
+        color: Colors.white10,
         child: Icon(Icons.chat_bubble_outline_rounded,
             size: 28, color: Colors.white),
-        decoration: BoxDecoration(
-            color: Colors.white10, borderRadius: BorderRadius.circular(4)),
       ),
     );
   }

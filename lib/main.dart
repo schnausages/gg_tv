@@ -154,6 +154,7 @@ class _TabBasePageState extends State<TabBasePage> {
                     child: MaterialButton(
                       onPressed: () => _onItemTapped(2),
                       child: Icon(Icons.add,
+                          size: 38,
                           color:
                               _pageIndex == 2 ? _activeColor : _inactiveColor),
                     ),

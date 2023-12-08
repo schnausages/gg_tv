@@ -341,7 +341,30 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           }),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          print("PURT ");
           //add new user
+          try {
+            var _gameQuery = await FirebaseFirestore.instance
+                .collection('games_metadata')
+                .get();
+            var _gamesDocs = _gameQuery.docs;
+            _gamesDocs.forEach((element) async {
+              String game_title = element.data()['game_title'];
+              String game_id = element.data()['game_id'];
+
+              var _subQuery = await FirebaseFirestore.instance
+                  .collectionGroup('games_for_user')
+                  .where('game_title', isEqualTo: game_title)
+                  .get();
+              _subQuery.docs.forEach((element) {
+                element.reference.update({'game_id': game_id});
+                print(
+                    "PURT UPDATED ${_subQuery.docs.length} docs for $game_title");
+              });
+            });
+          } catch (e) {
+            print("PURT $e");
+          }
 
           // var _userDoc = await FirebaseFirestore.instance
           //     .collection('users')

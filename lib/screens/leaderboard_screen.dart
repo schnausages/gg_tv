@@ -13,6 +13,7 @@ class LeaderboardScreen extends StatefulWidget {
 class _LeaderboardScreenState extends State<LeaderboardScreen> {
   int _selectedIndex = 0;
   String selectedGame = 'Fortnite';
+  late Future _getLeaderboard;
 
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> getGameLeaderboard(
       String gameTitle) async {
@@ -28,10 +29,15 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: AppStyles.backgroundColor,
-        appBar: AppBar(
-          title: Text(
-            'Valorant Leaders',
-            style: AppStyles.giga18Text.copyWith(fontSize: 22),
+        appBar: PreferredSize(
+          preferredSize: Size(double.infinity, 45),
+          child: AppBar(
+            elevation: 0,
+            backgroundColor: AppStyles.backgroundColor,
+            title: Text(
+              '$selectedGame Leaders',
+              style: AppStyles.giga18Text.copyWith(fontWeight: FontWeight.bold),
+            ),
           ),
         ),
         body: FutureBuilder(
@@ -156,13 +162,15 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                           physics: const AlwaysScrollableScrollPhysics(
                               parent: BouncingScrollPhysics()),
                           itemBuilder: (context, i) {
-                            UserModel _u = UserModel(
-                                userId: '',
-                                username: snapshot.data![i]['username'],
-                                pfp: snapshot.data![i]['user_pfp'],
-                                ups: snapshot.data![i]['ups'],
-                                stars: snapshot.data![i]['stars'],
-                                downs: snapshot.data![i]['downs']);
+                            UserModel _u =
+                                UserModel.fromJson(snapshot.data![i].data());
+                            // UserModel _u = UserModel(
+                            //     userId: '',
+                            //     username: snapshot.data![i]['username'],
+                            //     pfp: snapshot.data![i]['user_pfp'],
+                            //     ups: snapshot.data![i]['ups'],
+                            //     stars: snapshot.data![i]['stars'],
+                            //     downs: snapshot.data![i]['downs']);
                             return LeaderboardTile(
                               user: _u,
                             );
@@ -173,8 +181,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               } else {
                 return Center(
                   child: SizedBox(
-                    height: 25,
-                    width: 60,
+                    height: 60,
+                    width: 80,
                     child: Image.asset('assets/images/gg_loading.gif'),
                   ),
                 );
