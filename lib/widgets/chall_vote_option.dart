@@ -130,7 +130,7 @@ class _ChallVoteItemState extends State<ChallVoteItem> {
 // );
   @override
   Widget build(BuildContext context) {
-    final _w = widget.size.width * .475;
+    final _w = widget.size.width * .5;
     final _h = widget.size.height * .45;
     if (!_controller1.value.isInitialized &&
         !_controller2.value.isInitialized) {
@@ -170,24 +170,47 @@ class _ChallVoteItemState extends State<ChallVoteItem> {
                 controller1: _controller1,
                 controller2: _controller2,
                 s: widget.size),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Row(
+          if (widget.stackView)
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _VoteButton(
-                  s: widget.size,
-                  isStackView: widget.stackView,
-                  isTop: true,
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: _VoteButton(
+                    s: widget.size,
+                    isStackView: widget.stackView,
+                    isTop: true,
+                  ),
                 ),
-                _VoteButton(
-                  s: widget.size,
-                  isStackView: widget.stackView,
-                  isTop: false,
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: _VoteButton(
+                    s: widget.size,
+                    isStackView: widget.stackView,
+                    isTop: false,
+                  ),
                 )
               ],
             ),
-          ),
+          if (!widget.stackView)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _VoteButton(
+                    s: widget.size,
+                    isStackView: widget.stackView,
+                    isTop: true,
+                  ),
+                  _VoteButton(
+                    s: widget.size,
+                    isStackView: widget.stackView,
+                    isTop: false,
+                  )
+                ],
+              ),
+            ),
           const Spacer(),
           Padding(
             padding: const EdgeInsets.only(right: 8.0, bottom: 80.0, left: 8.0),
@@ -255,7 +278,7 @@ class _VoteButton extends StatefulWidget {
 
 class __VoteButtonState extends State<_VoteButton> {
   final Color _reactColor = const Color(0xFF8F0EF3);
-  final Color _deffault = Color(0xFF607D8B);
+  final Color _deffault = Colors.white10;
   bool _voted = false;
   _vote() {
     setState(() {
@@ -263,73 +286,50 @@ class __VoteButtonState extends State<_VoteButton> {
     });
   }
 
+  String voteTxt() {
+    if (widget.isTop && widget.isStackView) {
+      return 'TOP';
+    } else if (widget.isStackView) {
+      return 'BOTTOM';
+    } else {
+      return 'VOTE';
+    }
+  }
+
+  Widget iconStack() {
+    if (widget.isStackView && widget.isTop) {
+      return Icon(Icons.arrow_upward_rounded);
+    } else {
+      return Icon(Icons.arrow_downward_rounded);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (!widget.isStackView) {
-      return Container(
-          width: widget.s.width * .45,
-          height: 50,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(2),
-              color: _voted ? _reactColor : _deffault),
-          child: Stack(
-            alignment: Alignment.center,
+    return InkWell(
+      onTap: () {
+        if (!_voted) {
+          _vote();
+        }
+      },
+      child: Container(
+        width: widget.s.width * .48,
+        height: 40,
+        color: _voted ? _reactColor : _deffault,
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AnimatedReactButton(
-                defaultColor: const Color.fromARGB(255, 45, 57, 63),
-                reactColor: _reactColor,
-                iconSize: 40,
-                defaultIcon: Icons.add_box_rounded,
-                showSplash: true,
-
-                canVote: true, //check if user can vote
-                onPressed: () {
-                  if (!_voted) {
-                    _vote();
-                  }
-                },
+              if (widget.isStackView) iconStack(),
+              SizedBox(width: 2),
+              Text(
+                voteTxt(),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              if (_voted)
-                Text(753.toString(),
-                    style: AppStyles.giga18Text
-                        .copyWith(fontWeight: FontWeight.w700, fontSize: 22)),
             ],
-          ));
-    }
-    if (widget.isStackView) {
-      return Container(
-          width: widget.s.width * .45,
-          height: 50,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(2),
-              color: _voted ? _reactColor : _deffault),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              AnimatedReactButton(
-                defaultColor: _deffault,
-                reactColor: _deffault,
-                iconSize: 40,
-                defaultIcon: Icons.circle_outlined,
-                showSplash: true,
-                canVote: true,
-                onPressed: () {
-                  if (!_voted) {
-                    _vote();
-                  }
-                },
-              ),
-              if (!_voted)
-                Text(widget.isTop ? 'TOP' : 'BOTTOM',
-                    style: AppStyles.giga18Text
-                        .copyWith(fontWeight: FontWeight.bold, fontSize: 20)),
-              if (_voted)
-                Text(753.toString(),
-                    style: AppStyles.giga18Text
-                        .copyWith(fontWeight: FontWeight.w700, fontSize: 22)),
-            ],
-          ));
-    }
-    return SizedBox();
+          ),
+        ),
+      ),
+    );
   }
 }

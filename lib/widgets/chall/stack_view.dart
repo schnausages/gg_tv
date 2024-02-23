@@ -17,7 +17,7 @@ class StackChallView extends StatelessWidget {
       children: [
         Container(
           width: double.infinity,
-          height: s.height * .35,
+          height: s.height * .375,
           child: FittedBox(
             fit: BoxFit.cover,
             clipBehavior: Clip.hardEdge,
